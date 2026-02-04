@@ -1043,9 +1043,53 @@
             });
         });
 
-        // Infinite marquee - handled purely with CSS
-        // The marquee uses two identical content blocks and translateX(-50%) animation
-        // No JS cloning needed - CSS handles the seamless loop
+        // Infinite marquee - clone content to fill viewport
+        (function() {
+            const track = document.querySelector('.marquee-track');
+            if (!track) return;
+
+            const section = document.querySelector('.marquee-section');
+            if (!section) return;
+
+            // Get the original content (first one only)
+            const originalContent = track.querySelector('.marquee-content');
+            if (!originalContent) return;
+
+            // Only run once on load, not on resize
+            function setupMarquee() {
+                // Skip if hidden (mobile)
+                if (window.getComputedStyle(section).display === 'none') return;
+
+                const contentWidth = originalContent.offsetWidth;
+                if (contentWidth === 0) return;
+
+                const viewportWidth = window.innerWidth;
+                const clonesNeeded = Math.ceil((viewportWidth * 2) / contentWidth) + 1;
+
+                // Remove any previously added clones (keep first 2 from HTML)
+                const allContent = track.querySelectorAll('.marquee-content');
+                allContent.forEach((el, i) => {
+                    if (i >= 2) el.remove();
+                });
+
+                // Add clones if needed
+                for (let i = 0; i < clonesNeeded; i++) {
+                    const clone = originalContent.cloneNode(true);
+                    clone.setAttribute('aria-hidden', 'true');
+                    track.appendChild(clone);
+                }
+            }
+
+            // Run once on load
+            setupMarquee();
+
+            // Debounced resize handler
+            let resizeTimeout;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(setupMarquee, 250);
+            });
+        })();
     </script>
 </body>
 </html>
