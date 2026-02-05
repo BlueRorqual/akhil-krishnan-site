@@ -200,7 +200,7 @@
         }
 
         .hero-portrait.stuck {
-            position: absolute;
+            position: fixed;
         }
 
         .hero-content {
@@ -879,7 +879,7 @@
                     <a href="https://linkedin.com/in/theakhilkrishnan" target="_blank" rel="noopener" aria-label="LinkedIn">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
                     </a>
-                    <a href="mailto:akkrishnan@pm.me" aria-label="Email">
+                    <a href="mailto:contact.unlimited059@silomails.com" aria-label="Email">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                     </a>
                 </div>
@@ -887,6 +887,7 @@
         </div>
     </header>
 
+    <!--
     <div class="marquee-section">
         <div class="marquee">
             <div class="marquee-track">
@@ -907,6 +908,7 @@
             </div>
         </div>
     </div>
+    -->
 
     <section id="about" class="section">
         <div class="container">
@@ -1061,7 +1063,7 @@
                 <h2 class="footer-title reveal">LET'S CONNECT</h2>
                 <p class="footer-text reveal reveal-delay-1">I'm always open to thoughtful conversations about logistics, systems, or long-term work.</p>
                 <div class="footer-links reveal reveal-delay-2">
-                    <a href="mailto:akkrishnan@pm.me" class="footer-link">Email</a>
+                    <a href="mailto:contact.unlimited059@silomails.com" class="footer-link">Email</a>
                     <a href="https://github.com/BlueRorqual" target="_blank" rel="noopener" class="footer-link">GitHub</a>
                     <a href="https://linkedin.com/in/theakhilkrishnan" target="_blank" rel="noopener" class="footer-link">LinkedIn</a>
                 </div>
@@ -1118,28 +1120,30 @@
             window.addEventListener('scroll', onScroll, { passive: true });
         })();
 
-        // Portrait scroll behavior - follows scroll, sticks at marquee
+        // Portrait scroll behavior - follows scroll, sticks between hero and about
         (function() {
             const portrait = document.querySelector('.hero-portrait');
-            const marquee = document.querySelector('.marquee-section');
-            if (!portrait || !marquee) return;
+            const aboutSection = document.querySelector('#about');
+            if (!portrait || !aboutSection) return;
 
             function updatePortraitPosition() {
-                const marqueeTop = marquee.getBoundingClientRect().top;
                 const portraitHeight = portrait.offsetHeight;
-                const viewportCenter = window.innerHeight / 2;
-                const portraitBottomInViewport = viewportCenter + (portraitHeight / 2);
+                const viewportHeight = window.innerHeight;
+                const viewportCenter = viewportHeight / 2;
 
-                // When the portrait's bottom would touch the marquee top
-                if (marqueeTop <= portraitBottomInViewport) {
-                    // Stick the portrait so its bottom aligns with marquee top
-                    const stuckTop = marquee.offsetTop - portraitHeight;
-                    portrait.classList.add('stuck');
-                    portrait.style.top = stuckTop + 'px';
+                // Where the portrait bottom would be if centered (in document coords)
+                const centeredBottom = window.scrollY + viewportCenter + (portraitHeight / 2);
+
+                // The maximum document position for the portrait's bottom
+                const maxBottom = aboutSection.offsetTop + 100;
+
+                if (centeredBottom > maxBottom) {
+                    // Portrait would go too low - cap it
+                    const cappedTop = maxBottom - portraitHeight - window.scrollY;
+                    portrait.style.top = cappedTop + 'px';
                     portrait.style.transform = 'translateX(-50%)';
                 } else {
-                    // Return to normal fixed center position
-                    portrait.classList.remove('stuck');
+                    // Normal centered position
                     portrait.style.top = '50%';
                     portrait.style.transform = 'translate(-50%, -50%)';
                 }
