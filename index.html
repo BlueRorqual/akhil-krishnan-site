@@ -180,10 +180,39 @@
             pointer-events: none;
         }
 
+        .hero-portrait {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: auto;
+            max-height: 90vh;
+            object-fit: contain;
+            opacity: 0.25;
+            filter: sepia(0.3) saturate(0.7) brightness(0.9) contrast(1.05);
+            mix-blend-mode: luminosity;
+            mask-image: radial-gradient(ellipse 75% 85% at 50% 50%, black 30%, transparent 75%);
+            -webkit-mask-image: radial-gradient(ellipse 75% 85% at 50% 50%, black 30%, transparent 75%);
+            pointer-events: none;
+            z-index: 0;
+            will-change: transform;
+        }
+
+        .hero-portrait.stuck {
+            position: absolute;
+        }
+
         .hero-content {
             position: relative;
             z-index: 2;
             text-align: center;
+            opacity: 0;
+            transition: opacity 0.8s var(--ease-out-expo);
+        }
+
+        .hero-content.visible {
+            opacity: 1;
         }
 
         .hero-tagline {
@@ -194,7 +223,13 @@
             color: var(--accent-copper);
             margin-bottom: 2rem;
             opacity: 0;
-            animation: fadeUp 0.8s var(--ease-out-expo) 0.2s forwards;
+            transform: translateY(30px);
+            transition: opacity 0.8s var(--ease-out-expo) 0.2s, transform 0.8s var(--ease-out-expo) 0.2s;
+        }
+
+        .hero-content.visible .hero-tagline {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .hero-tagline .bracket {
@@ -210,7 +245,13 @@
             color: var(--text-primary);
             margin-bottom: 1.5rem;
             opacity: 0;
-            animation: fadeUp 0.8s var(--ease-out-expo) 0.35s forwards;
+            transform: translateY(30px);
+            transition: opacity 0.8s var(--ease-out-expo) 0.35s, transform 0.8s var(--ease-out-expo) 0.35s;
+        }
+
+        .hero-content.visible .hero-name {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .hero-name span {
@@ -225,7 +266,13 @@
             margin: 0 auto 3rem;
             line-height: 1.6;
             opacity: 0;
-            animation: fadeUp 0.8s var(--ease-out-expo) 0.5s forwards;
+            transform: translateY(30px);
+            transition: opacity 0.8s var(--ease-out-expo) 0.5s, transform 0.8s var(--ease-out-expo) 0.5s;
+        }
+
+        .hero-content.visible .hero-intro {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .hero-intro .code {
@@ -242,7 +289,13 @@
             justify-content: center;
             gap: 1rem;
             opacity: 0;
-            animation: fadeUp 0.8s var(--ease-out-expo) 0.65s forwards;
+            transform: translateY(30px);
+            transition: opacity 0.8s var(--ease-out-expo) 0.65s, transform 0.8s var(--ease-out-expo) 0.65s;
+        }
+
+        .hero-content.visible .hero-links {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .hero-links a {
@@ -299,7 +352,7 @@
 
         .marquee-track {
             display: flex;
-            animation: scroll 20s linear infinite;
+            animation: scroll 22s linear infinite;
         }
 
         .marquee-content {
@@ -729,6 +782,12 @@
                 font-size: 3.5rem;
             }
 
+            .hero-portrait {
+                width: 90%;
+                max-width: 400px;
+                opacity: 0.18;
+            }
+
             .timeline-item {
                 grid-template-columns: 1fr;
                 gap: 1.25rem;
@@ -807,6 +866,7 @@
     <header class="hero">
         <div class="hero-ray"></div>
         <div class="hero-glow"></div>
+        <img src="images/ak-portrait.png" alt="" class="hero-portrait" aria-hidden="true">
         <div class="container">
             <div class="hero-content">
                 <p class="hero-tagline"><span class="bracket">{</span> practising clarity <span class="bracket">}</span></p>
@@ -1039,6 +1099,55 @@
                 }
             });
         });
+
+        // Hero text appears on scroll
+        (function() {
+            const heroContent = document.querySelector('.hero-content');
+            if (!heroContent) return;
+
+            let hasScrolled = false;
+
+            function onScroll() {
+                if (!hasScrolled && window.scrollY > 10) {
+                    hasScrolled = true;
+                    heroContent.classList.add('visible');
+                    window.removeEventListener('scroll', onScroll);
+                }
+            }
+
+            window.addEventListener('scroll', onScroll, { passive: true });
+        })();
+
+        // Portrait scroll behavior - follows scroll, sticks at marquee
+        (function() {
+            const portrait = document.querySelector('.hero-portrait');
+            const marquee = document.querySelector('.marquee-section');
+            if (!portrait || !marquee) return;
+
+            function updatePortraitPosition() {
+                const marqueeTop = marquee.getBoundingClientRect().top;
+                const portraitHeight = portrait.offsetHeight;
+                const viewportCenter = window.innerHeight / 2;
+                const portraitBottomInViewport = viewportCenter + (portraitHeight / 2);
+
+                // When the portrait's bottom would touch the marquee top
+                if (marqueeTop <= portraitBottomInViewport) {
+                    // Stick the portrait so its bottom aligns with marquee top
+                    const stuckTop = marquee.offsetTop - portraitHeight;
+                    portrait.classList.add('stuck');
+                    portrait.style.top = stuckTop + 'px';
+                    portrait.style.transform = 'translateX(-50%)';
+                } else {
+                    // Return to normal fixed center position
+                    portrait.classList.remove('stuck');
+                    portrait.style.top = '50%';
+                    portrait.style.transform = 'translate(-50%, -50%)';
+                }
+            }
+
+            window.addEventListener('scroll', updatePortraitPosition, { passive: true });
+            updatePortraitPosition();
+        })();
 
         // Infinite marquee - clone content to fill viewport
         (function() {
