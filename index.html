@@ -237,12 +237,6 @@
             position: relative;
             z-index: 2;
             text-align: center;
-            opacity: 0;
-            transition: opacity 0.8s var(--ease-out-expo);
-        }
-
-        .hero-content.visible {
-            opacity: 1;
         }
 
         .hero-tagline {
@@ -252,14 +246,6 @@
             text-transform: uppercase;
             color: var(--accent-copper);
             margin-bottom: 2rem;
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.8s var(--ease-out-expo) 0.2s, transform 0.8s var(--ease-out-expo) 0.2s;
-        }
-
-        .hero-content.visible .hero-tagline {
-            opacity: 1;
-            transform: translateY(0);
         }
 
         .hero-tagline .bracket {
@@ -274,14 +260,6 @@
             line-height: 0.9;
             color: var(--text-primary);
             margin-bottom: 1.5rem;
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.8s var(--ease-out-expo) 0.35s, transform 0.8s var(--ease-out-expo) 0.35s;
-        }
-
-        .hero-content.visible .hero-name {
-            opacity: 1;
-            transform: translateY(0);
         }
 
         .hero-name span {
@@ -295,14 +273,6 @@
             max-width: 550px;
             margin: 0 auto 3rem;
             line-height: 1.6;
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.8s var(--ease-out-expo) 0.5s, transform 0.8s var(--ease-out-expo) 0.5s;
-        }
-
-        .hero-content.visible .hero-intro {
-            opacity: 1;
-            transform: translateY(0);
         }
 
         .hero-intro .code {
@@ -318,14 +288,6 @@
             display: flex;
             justify-content: center;
             gap: 1rem;
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.8s var(--ease-out-expo) 0.65s, transform 0.8s var(--ease-out-expo) 0.65s;
-        }
-
-        .hero-content.visible .hero-links {
-            opacity: 1;
-            transform: translateY(0);
         }
 
         .hero-links a {
@@ -1135,24 +1097,6 @@
                 }
             });
         });
-
-        // Hero text appears on scroll
-        (function() {
-            const heroContent = document.querySelector('.hero-content');
-            if (!heroContent) return;
-
-            let hasScrolled = false;
-
-            function onScroll() {
-                if (!hasScrolled && window.scrollY > 10) {
-                    hasScrolled = true;
-                    heroContent.classList.add('visible');
-                    window.removeEventListener('scroll', onScroll);
-                }
-            }
-
-            window.addEventListener('scroll', onScroll, { passive: true });
-        })();
 
         // Portrait scroll behavior - scrolls into portrait section, stops before about
         (function() {
