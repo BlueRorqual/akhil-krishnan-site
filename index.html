@@ -190,7 +190,7 @@
             max-height: 90vh;
             object-fit: contain;
             opacity: 0.35;
-            filter: sepia(0.3) saturate(0.7) brightness(1.1) contrast(1.05);
+            filter: sepia(0.3) saturate(0.7) brightness(1.25) contrast(1.05);
             mix-blend-mode: luminosity;
             mask-image: radial-gradient(ellipse 75% 85% at 50% 50%, black 30%, transparent 75%);
             -webkit-mask-image: radial-gradient(ellipse 75% 85% at 50% 50%, black 30%, transparent 75%);
@@ -839,6 +839,99 @@
         .reveal-delay-2 { transition-delay: 0.2s; }
         .reveal-delay-3 { transition-delay: 0.3s; }
         .reveal-delay-4 { transition-delay: 0.4s; }
+
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            opacity: 1;
+            transition: opacity 0.4s ease;
+            z-index: 10;
+        }
+
+        .scroll-indicator span {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .scroll-indicator::after {
+            content: '';
+            width: 1px;
+            height: 40px;
+            background: linear-gradient(to bottom, var(--accent-copper), transparent);
+            animation: scrollPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes scrollPulse {
+            0%, 100% { opacity: 0.3; transform: scaleY(0.8); }
+            50% { opacity: 1; transform: scaleY(1); }
+        }
+
+        /* Floating particles */
+        .hero-particles {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: var(--accent-copper);
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFloat 15s ease-in-out infinite;
+        }
+
+        .particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .particle:nth-child(2) { left: 25%; animation-delay: 2s; }
+        .particle:nth-child(3) { left: 40%; animation-delay: 4s; }
+        .particle:nth-child(4) { left: 55%; animation-delay: 6s; }
+        .particle:nth-child(5) { left: 70%; animation-delay: 8s; }
+        .particle:nth-child(6) { left: 85%; animation-delay: 10s; }
+        .particle:nth-child(7) { left: 15%; animation-delay: 1s; }
+        .particle:nth-child(8) { left: 60%; animation-delay: 3s; }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-100px) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* Pause animations when tab is hidden */
+        .animation-paused .particle,
+        .animation-paused .scroll-indicator::after,
+        .animation-paused .hero-ray {
+            animation-play-state: paused;
+        }
+
+        @media (max-width: 768px) {
+            .scroll-indicator {
+                bottom: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -856,6 +949,16 @@
     </nav>
 
     <header id="hero" class="hero">
+        <div class="hero-particles" aria-hidden="true">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
         <div class="hero-ray"></div>
         <div class="hero-glow"></div>
         <img src="images/ak-portrait.png" alt="" class="hero-portrait" aria-hidden="true">
@@ -874,6 +977,9 @@
                     <a href="https://linkedin.com/in/theakhilkrishnan" target="_blank" rel="noopener" aria-label="LinkedIn">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
                     </a>
+                </div>
+                <div class="scroll-indicator">
+                    <span>Scroll</span>
                 </div>
             </div>
         </div>
@@ -1069,6 +1175,26 @@
     </footer>
 
     <script>
+        // Pause animations when tab is hidden
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                document.body.classList.add('animation-paused');
+            } else {
+                document.body.classList.remove('animation-paused');
+            }
+        });
+
+        // Scroll indicator fade
+        (function() {
+            const indicator = document.querySelector('.scroll-indicator');
+            if (!indicator) return;
+
+            window.addEventListener('scroll', () => {
+                const opacity = Math.max(0, 1 - (window.scrollY / 300));
+                indicator.style.opacity = opacity;
+            }, { passive: true });
+        })();
+
         // Intersection Observer for scroll reveals
         const observerOptions = {
             threshold: 0.1,
