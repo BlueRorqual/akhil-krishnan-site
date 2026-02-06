@@ -192,8 +192,22 @@
             opacity: 0.35;
             filter: sepia(0.3) saturate(0.7) brightness(1.25) contrast(1.05);
             mix-blend-mode: luminosity;
-            mask-image: radial-gradient(ellipse 75% 85% at 50% 50%, black 30%, transparent 75%);
-            -webkit-mask-image: radial-gradient(ellipse 75% 85% at 50% 50%, black 30%, transparent 75%);
+            mask-image: radial-gradient(ellipse 80% 90% at 50% 48%,
+                rgba(0,0,0,1) 10%,
+                rgba(0,0,0,0.8) 25%,
+                rgba(0,0,0,0.5) 40%,
+                rgba(0,0,0,0.25) 55%,
+                rgba(0,0,0,0.1) 65%,
+                rgba(0,0,0,0.03) 75%,
+                transparent 85%);
+            -webkit-mask-image: radial-gradient(ellipse 80% 90% at 50% 48%,
+                rgba(0,0,0,1) 10%,
+                rgba(0,0,0,0.8) 25%,
+                rgba(0,0,0,0.5) 40%,
+                rgba(0,0,0,0.25) 55%,
+                rgba(0,0,0,0.1) 65%,
+                rgba(0,0,0,0.03) 75%,
+                transparent 85%);
             pointer-events: none;
             z-index: 0;
             will-change: transform;
